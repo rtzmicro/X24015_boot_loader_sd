@@ -112,15 +112,29 @@ void MyInitFunc(void)
 {
     // Enable Port-P peripheral
     ROM_SysCtlPeripheralEnable(LED_GPIO_SYSCTL_PERIPH);
-
     // Enable pins PP2 & PP3 for GPIOOutput
     ROM_GPIOPinTypeGPIOOutput(LED_GPIO_PORT_BASE, GPIO_PIN_2|GPIO_PIN_3);
-
     // STAT_LED1(ACT) off
-    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT1_PIN, PIN_LOW);
-
+    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN, PIN_LOW);
     // STAT_LED2(ALM) on
     ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, GPIO_PIN_3, PIN_LOW);
+}
+
+//*****************************************************************************
+//
+// Performs application-specific cleanup before the bootloader exits.
+//
+// This function will be called just prior to jumping to the application.
+//
+// void MyExitFunc(void);
+//
+//*****************************************************************************
+
+void MyExitFunc(void)
+{
+    // Reset and disable the GPIO peripherals used by the boot loader.
+    ROM_SysCtlPeripheralDisable(LED_GPIO_SYSCTL_PERIPH);
+    ROM_SysCtlPeripheralReset(LED_GPIO_SYSCTL_PERIPH);
 }
 
 //*****************************************************************************
@@ -138,10 +152,10 @@ void MyInitFunc(void)
 void MyStartFunc(void)
 {
     // Turn on STAT_LED1(ACT)
-    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT1_PIN, PIN_LOW);
+    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN, PIN_LOW);
 
     // Turn off STAT_LED2(ALM)
-    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT2_PIN, PIN_LOW);
+    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ALM_PIN, PIN_LOW);
 
     UARTPuts("\nBootloader starting\n");
 
@@ -221,7 +235,7 @@ void MyOpenFunc(uint32_t error)
 void MyBeginFunc(void)
 {
     // Turn on STAT_LED2(ALM) while flashing
-    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT2_PIN, PIN_HIGH);
+    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ALM_PIN, PIN_HIGH);
 
     UARTprintf("Flashing image\n");
 }
@@ -242,7 +256,7 @@ void MyBeginFunc(void)
 void MyEndFunc(void)
 {
     // Status both LED's off
-    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT1_PIN|LED_STAT2_PIN, PIN_LOW);
+    ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN|LED_ALM_PIN, PIN_LOW);
 
     UARTprintf("\nFlash complete\n");
 }
@@ -275,9 +289,9 @@ void MyProgressFunc(uint32_t ulCompleted, uint32_t ulTotal)
         UARTPutch('.');
 
         // Toggle status LED on PP2
-        uint32_t pin = ROM_GPIOPinRead(LED_GPIO_PORT_BASE, LED_STAT1_PIN) ? PIN_LOW : PIN_HIGH;
+        uint32_t pin = ROM_GPIOPinRead(LED_GPIO_PORT_BASE, LED_ACT_PIN) ? PIN_LOW : PIN_HIGH;
 
-        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT1_PIN, pin);
+        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN, pin);
     }
 }
 
@@ -293,9 +307,9 @@ void BlinkGreen(int n)
 
     for (i=0; i < n; i++)
     {
-        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT1_PIN, LED_STAT1_PIN);
+        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN, LED_ACT_PIN);
         ROM_SysCtlDelay(2000000);
-        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT1_PIN, !LED_STAT1_PIN);
+        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN, !LED_ACT_PIN);
         ROM_SysCtlDelay(2000000);
     }
 }
@@ -308,9 +322,9 @@ void BlinkRed(int n)
 
     for (i=0; i < n; i++)
     {
-        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT2_PIN, LED_STAT2_PIN);
+        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ALM_PIN, LED_ALM_PIN);
         ROM_SysCtlDelay(3000000);
-        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_STAT2_PIN, !LED_STAT2_PIN);
+        ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ALM_PIN, !LED_ALM_PIN);
         ROM_SysCtlDelay(3000000);
     }
 }

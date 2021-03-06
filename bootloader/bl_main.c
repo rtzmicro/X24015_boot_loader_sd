@@ -211,16 +211,12 @@ void ConfigureDevice(void)
 
 void ConfigureSSI(void)
 {
-    //
-    // The SSI1 peripheral must be enabled for use.
-    //
-    ROM_SysCtlPeripheralEnable(SD_SSI_PORT_BASE);
-
     /* Enable SD SSI peripherals */
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
-    ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOK);
+
+    ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_SSI);
+    ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_SCLK);
+    ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_MOSI);
+    ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_MISO);
 
     /* SSI-1 Configure Pins */
 
@@ -247,20 +243,20 @@ void ConfigureSSI(void)
 
     /* SCK (PB5) */
     MAP_GPIOPadConfigSet(SD_SSICLK_BASE,
-                     GPIO_PIN_5,
-                     GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
+                         GPIO_PIN_5,
+                         GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
     /* MOSI (PE4) */
     MAP_GPIOPadConfigSet(GPIO_PORTE_BASE,
-                     GPIO_PIN_4,
-                     GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
+                         GPIO_PIN_4,
+                         GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
     /* MISO (PE5) */
     MAP_GPIOPadConfigSet(GPIO_PORTE_BASE,
-                     GPIO_PIN_5,
-                     GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPU);
+                         GPIO_PIN_5,
+                         GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPU);
     /* CS (PK7) */
     MAP_GPIOPadConfigSet(GPIO_PORTK_BASE,
-                     GPIO_PIN_7,
-                     GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
+                         GPIO_PIN_7,
+                         GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
 
     //
     // Configure and enable the SSI port for SPI master mode.  Use SSI1,
@@ -436,23 +432,22 @@ void Updater(void)
         }
     }
 
-    // Reset and disable the SSI peripheral that used by the boot loader.
-    ROM_SysCtlPeripheralDisable(SYSCTL_PERIPH_SSI1);
-    ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_SSI1);
+    // Reset and disable the SSI peripherals used by the boot loader.
+    ROM_SysCtlPeripheralDisable(SD_SYSCTL_PERIPH_SSI);
+    ROM_SysCtlPeripheralReset(SD_SYSCTL_PERIPH_SSI);
 
-    // Reset and disable the GPIO peripheral that used by the boot loader.
-    ROM_SysCtlPeripheralDisable(SYSCTL_PERIPH_GPIOB);
-    ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_GPIOB);
+    ROM_SysCtlPeripheralDisable(SD_SYSCTL_PERIPH_GPIO_SCLK);
+    ROM_SysCtlPeripheralReset(SD_SYSCTL_PERIPH_GPIO_SCLK);
 
-    ROM_SysCtlPeripheralDisable(SYSCTL_PERIPH_GPIOK);
-    ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_GPIOK);
+    ROM_SysCtlPeripheralDisable(SD_SYSCTL_PERIPH_GPIO_MOSI);
+    ROM_SysCtlPeripheralReset(SD_SYSCTL_PERIPH_GPIO_MOSI);
 
-    ROM_SysCtlPeripheralDisable(SYSCTL_PERIPH_GPIOE);
-    ROM_SysCtlPeripheralReset(SYSCTL_PERIPH_GPIOE);
+    ROM_SysCtlPeripheralDisable(SD_SYSCTL_PERIPH_GPIO_MISO);
+    ROM_SysCtlPeripheralReset(SD_SYSCTL_PERIPH_GPIO_MISO);
 
-    // Reset and disable the GPIO peripheral that used by the boot loader.
-    ROM_SysCtlPeripheralDisable(LED_GPIO_SYSCTL_PERIPH);
-    ROM_SysCtlPeripheralReset(LED_GPIO_SYSCTL_PERIPH);
+#ifdef BL_EXIT_FN_HOOK
+    BL_EXIT_FN_HOOK();
+#endif
 
     // Disable the SSI clock
 #ifdef SSI_ENABLE_UPDATE
