@@ -70,6 +70,10 @@ extern void BL_PROGRESS_FN_HOOK(uint32_t ui32Completed, uint32_t ui32Total);
 extern void BL_END_FN_HOOK(void);
 #endif
 
+#ifdef BL_EXIT_FN_HOOK
+extern void BL_EXIT_FN_HOOK(void);
+#endif
+
 #ifdef BL_DECRYPT_FN_HOOK
 extern void BL_DECRYPT_FN_HOOK(uint8_t *pui8Buffer, uint32_t ui32Size);
 #endif

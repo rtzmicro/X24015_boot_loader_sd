@@ -220,42 +220,41 @@ void ConfigureSSI(void)
 
     /* SSI-1 Configure Pins */
 
-    // Enable pin PE5 for SSI1 SSI1XDAT1
-    GPIOPinConfigure(GPIO_PE5_SSI1XDAT1);
-    ROM_GPIOPinTypeSSI(GPIO_PORTE_BASE, GPIO_PIN_5);
+    // Enable pin for SSI SSI1CLK
+    ROM_GPIOPinConfigure(SD_GPIO_SCLK_PINCFG);
+    ROM_GPIOPinTypeSSI(SD_GPIO_SCLK_BASE, SD_GPIO_SCLK_PIN);
 
-    // Enable pin PE4 for SSI1 SSI1XDAT0
-    ROM_GPIOPinConfigure(GPIO_PE4_SSI1XDAT0);
-    ROM_GPIOPinTypeSSI(GPIO_PORTE_BASE, GPIO_PIN_4);
+    // Enable pin for SSI SSI1XDAT0(MOSI)
+    ROM_GPIOPinConfigure(SD_GPIO_MOSI_PINCFG);
+    ROM_GPIOPinTypeSSI(SD_GPIO_MOSI_BASE, SD_GPIO_MOSI_PIN);
 
-    // Enable pin PB5 for SSI1 SSI1CLK
-    ROM_GPIOPinConfigure(SD_GPIO_SSICLK);
-    ROM_GPIOPinTypeSSI(SD_SSICLK_BASE, GPIO_PIN_5);
+    // Enable pin for SSI SSI1XDAT1(MISO)
+    ROM_GPIOPinConfigure(SD_GPIO_MISO_PINCFG);
+    ROM_GPIOPinTypeSSI(SD_GPIO_MISO_BASE, SD_GPIO_MISO_PIN);
 
     // Enable pin PB4 for SSI1 SSI1FSS
-    //GPIOPinConfigure(GPIO_PB4_SSI1FSS);
-    //GPIOPinTypeSSI(SD_SSICLK_BASE, GPIO_PIN_4);
-
+    //GPIOPinConfigure(SD_GPIO_FSS_PINCFG);
+    //GPIOPinTypeSSI(SD_GPIO_FSS_BASE, SD_GPIO_FSS_PIN);
     // Enable pin PK7 for GPIOOutput (SSI1FSS_SD)
-    ROM_GPIOPinTypeGPIOOutput(GPIO_PORTK_BASE, GPIO_PIN_7);
+    ROM_GPIOPinTypeGPIOOutput(SD_GPIO_FSS_BASE, SD_GPIO_FSS_PIN);
 
     /* Configure pad settings */
 
-    /* SCK (PB5) */
-    MAP_GPIOPadConfigSet(SD_SSICLK_BASE,
-                         GPIO_PIN_5,
+    /* SCLK (PB5) */
+    MAP_GPIOPadConfigSet(SD_GPIO_SCLK_BASE,
+                         SD_GPIO_SCLK_PIN,
                          GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
     /* MOSI (PE4) */
-    MAP_GPIOPadConfigSet(GPIO_PORTE_BASE,
-                         GPIO_PIN_4,
+    MAP_GPIOPadConfigSet(SD_GPIO_MOSI_BASE,
+                         SD_GPIO_MOSI_PIN,
                          GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
     /* MISO (PE5) */
-    MAP_GPIOPadConfigSet(GPIO_PORTE_BASE,
-                         GPIO_PIN_5,
+    MAP_GPIOPadConfigSet(SD_GPIO_MISO_BASE,
+                         SD_GPIO_MISO_PIN,
                          GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD_WPU);
     /* CS (PK7) */
-    MAP_GPIOPadConfigSet(GPIO_PORTK_BASE,
-                         GPIO_PIN_7,
+    MAP_GPIOPadConfigSet(SD_GPIO_FSS_BASE,
+                         SD_GPIO_FSS_PIN,
                          GPIO_STRENGTH_4MA, GPIO_PIN_TYPE_STD);
 
     //
@@ -270,12 +269,12 @@ void ConfigureSSI(void)
 
     uint32_t sysclock = 120000000;
 
-    ROM_SSIConfigSetExpClk(SD_SSI_PORT_BASE, sysclock, SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, 400000, 8);
+    ROM_SSIConfigSetExpClk(SD_SSI_BASE, sysclock, SSI_FRF_MOTO_MODE_0, SSI_MODE_MASTER, 400000, 8);
 
     //
     // Enable the SSI1 module.
     //
-    ROM_SSIEnable(SD_SSI_PORT_BASE);
+    ROM_SSIEnable(SD_SSI_BASE);
 }
 
 //*****************************************************************************
@@ -310,13 +309,9 @@ void Updater(void)
     BL_START_FN_HOOK();
 #endif
 
-    //
-    // Try to mount the SD card
-    //
+    // Attempt to mount the SD file system 10 times.
 
     j = 0;
-
-    // Attempt to mount the SD file system 10 times.
 
     do {
 #ifdef BL_MOUNT_FN_HOOK
@@ -349,7 +344,7 @@ void Updater(void)
             BL_OPEN_FN_HOOK(0);
 #endif
             // attempt to open SD data file
-            rc = pf_open(APP_FILE_NAME);
+            rc = pf_open(IMAGE_FILE_NAME);
 
             // try again up to ten times
             j++;
@@ -425,6 +420,7 @@ void Updater(void)
                     AppAddress += 4;
                 }
 
+                // Call flash end hook if specified
 #ifdef BL_END_FN_HOOK
                 BL_END_FN_HOOK();
 #endif

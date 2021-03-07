@@ -80,10 +80,10 @@ void xmit_mmc (
     uint32_t ui32RcvDat;
 
     /* Write the data to the tx fifo */
-    ROM_SSIDataPut(SD_SSI_PORT_BASE, dat);
+    ROM_SSIDataPut(SD_SSI_BASE, dat);
 
     /* flush data read during the write */
-    ROM_SSIDataGet(SD_SSI_PORT_BASE, &ui32RcvDat);
+    ROM_SSIDataGet(SD_SSI_BASE, &ui32RcvDat);
 }
 
 
@@ -98,10 +98,10 @@ BYTE rcvr_mmc (void)
     uint32_t ui32RcvDat;
 
     /* write dummy data */
-    ROM_SSIDataPut(SD_SSI_PORT_BASE, 0xFF);
+    ROM_SSIDataPut(SD_SSI_BASE, 0xFF);
 
     /* read data frm rx fifo */
-    ROM_SSIDataGet(SD_SSI_PORT_BASE, &ui32RcvDat);
+    ROM_SSIDataGet(SD_SSI_BASE, &ui32RcvDat);
 
     return (BYTE)ui32RcvDat;
 }

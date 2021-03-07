@@ -412,19 +412,7 @@
 // memory space.
 //
 //*****************************************************************************
-#define APP_FILE_NAME           "X24015.bin"
-
-//*****************************************************************************
-//
-// These define the X24015 LED's that are used to blink during the bootloader
-// update process. These are the alarm (ALM) and activity (ACT) LED's.
-//
-//*****************************************************************************
-
-#define LED_GPIO_SYSCTL_PERIPH  SYSCTL_PERIPH_GPIOP
-#define LED_GPIO_PORT_BASE      GPIO_PORTP_BASE         // LED's port base
-#define LED_ALM_PIN             GPIO_PIN_2              // alarm LED pin
-#define LED_ACT_PIN             GPIO_PIN_3              // activity LED pin
+#define IMAGE_FILE_NAME           "X24015.bin"
 
 //*****************************************************************************
 //
@@ -442,16 +430,33 @@
 //
 //*****************************************************************************
 
+// Peripherals used by SD drive
 #define SD_SYSCTL_PERIPH_SSI            SYSCTL_PERIPH_SSI1
 #define SD_SYSCTL_PERIPH_GPIO_SCLK      SYSCTL_PERIPH_GPIOB
 #define SD_SYSCTL_PERIPH_GPIO_MOSI      SYSCTL_PERIPH_GPIOE
 #define SD_SYSCTL_PERIPH_GPIO_MISO      SYSCTL_PERIPH_GPIOK
 
-#define SD_SSI_PORT_BASE                SSI1_BASE
+/* Base port for SD SSI */
+#define SD_SSI_BASE                     SSI1_BASE
 
-#define SD_SSICLK_BASE                  GPIO_PORTB_BASE
-#define SD_GPIO_SSICLK                  GPIO_PB5_SSI1CLK
+/* SD Drive SCLK port/pin definitions */
+#define SD_GPIO_SCLK_BASE               GPIO_PORTB_BASE
+#define SD_GPIO_SCLK_PINCFG             GPIO_PB5_SSI1CLK
+#define SD_GPIO_SCLK_PIN                GPIO_PIN_5
 
+/* SD Drive MOSI port/pin definitions */
+#define SD_GPIO_MOSI_BASE               GPIO_PORTE_BASE
+#define SD_GPIO_MOSI_PINCFG             GPIO_PE4_SSI1XDAT0
+#define SD_GPIO_MOSI_PIN                GPIO_PIN_4
+
+/* SD Drive MISO port/pin definitions */
+#define SD_GPIO_MISO_BASE               GPIO_PORTE_BASE
+#define SD_GPIO_MISO_PINCFG             GPIO_PE5_SSI1XDAT1
+#define SD_GPIO_MISO_PIN                GPIO_PIN_5
+
+/* SD Drive FSS port/pin definitions */
+#define SD_GPIO_FSS_BASE                GPIO_PORTK_BASE
+#define SD_GPIO_FSS_PIN                 GPIO_PIN_7
 
 //*****************************************************************************
 // THE UART IS AVAILABLE FOR DEBUG OUTPUT MESSAGE SUPPORT

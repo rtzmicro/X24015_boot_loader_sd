@@ -50,6 +50,16 @@
 #include "bootloader/bl_flash.h"
 #include "bootloader/bl_hooks.h"
 
+//
+// These define the X24015 LED's that are used to blink during the bootloader
+// update process. These are the alarm (ALM) and activity (ACT) LED's.
+//
+
+#define LED_GPIO_SYSCTL_PERIPH  SYSCTL_PERIPH_GPIOP
+#define LED_GPIO_PORT_BASE      GPIO_PORTP_BASE         // LED's port base
+#define LED_ALM_PIN             GPIO_PIN_2              // alarm LED pin
+#define LED_ACT_PIN             GPIO_PIN_3              // activity LED pin
+
 #define PIN_LOW     ( 0)
 #define PIN_HIGH    (~0)
 
@@ -153,7 +163,6 @@ void MyStartFunc(void)
 {
     // Turn on STAT_LED1(ACT)
     ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ACT_PIN, PIN_LOW);
-
     // Turn off STAT_LED2(ALM)
     ROM_GPIOPinWrite(LED_GPIO_PORT_BASE, LED_ALM_PIN, PIN_LOW);
 
@@ -215,7 +224,7 @@ void MyOpenFunc(uint32_t error)
         // blink the LED
         BlinkGreen(1);
 
-        UARTprintf("Opening image: %s\n", APP_FILE_NAME);
+        UARTprintf("Opening image: %s\n", IMAGE_FILE_NAME);
     }
 }
 
