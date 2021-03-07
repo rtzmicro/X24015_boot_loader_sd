@@ -11,7 +11,7 @@ for use with TI-RTOS and the Tiva bootloader.
 
 ## Authors
 
-* Bob Starr (https://github.com/rtzaudio)
+* Bob Starr (https://github.com/rtzmicro)
 
 
 ## License
