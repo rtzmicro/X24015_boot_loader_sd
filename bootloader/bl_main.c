@@ -217,6 +217,7 @@ void ConfigureSSI(void)
     ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_SCLK);
     ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_MOSI);
     ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_MISO);
+    ROM_SysCtlPeripheralEnable(SD_SYSCTL_PERIPH_GPIO_FSS);
 
     /* SSI-1 Configure Pins */
 
@@ -344,7 +345,7 @@ void Updater(void)
             BL_OPEN_FN_HOOK(0);
 #endif
             // attempt to open SD data file
-            rc = pf_open(IMAGE_FILE_NAME);
+            rc = pf_open(BL_IMAGE_FILENAME);
 
             // try again up to ten times
             j++;
@@ -441,15 +442,11 @@ void Updater(void)
     ROM_SysCtlPeripheralDisable(SD_SYSCTL_PERIPH_GPIO_MISO);
     ROM_SysCtlPeripheralReset(SD_SYSCTL_PERIPH_GPIO_MISO);
 
+    ROM_SysCtlPeripheralDisable(SD_SYSCTL_PERIPH_GPIO_FSS);
+    ROM_SysCtlPeripheralReset(SD_SYSCTL_PERIPH_GPIO_FSS);
+
 #ifdef BL_EXIT_FN_HOOK
     BL_EXIT_FN_HOOK();
-#endif
-
-    // Disable the SSI clock
-#ifdef SSI_ENABLE_UPDATE
-    HWREG(SYSCTL_RCGCSSI) &= ~SSI_CLOCK_ENABLE;
-    HWREG(SYSCTL_SRSSI) = SSI_CLOCK_ENABLE;
-    HWREG(SYSCTL_SRSSI) = 0;
 #endif
 
     // Branch to the specified address. This should never return.

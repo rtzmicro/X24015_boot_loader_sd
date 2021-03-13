@@ -412,7 +412,7 @@
 // memory space.
 //
 //*****************************************************************************
-#define IMAGE_FILE_NAME           "X24015.bin"
+#define BL_IMAGE_FILENAME       "X24015.bin"
 
 //*****************************************************************************
 //
@@ -435,6 +435,7 @@
 #define SD_SYSCTL_PERIPH_GPIO_SCLK      SYSCTL_PERIPH_GPIOB
 #define SD_SYSCTL_PERIPH_GPIO_MOSI      SYSCTL_PERIPH_GPIOE
 #define SD_SYSCTL_PERIPH_GPIO_MISO      SYSCTL_PERIPH_GPIOK
+#define SD_SYSCTL_PERIPH_GPIO_FSS       SYSCTL_PERIPH_GPIOK
 
 /* Base port for SD SSI */
 #define SD_SSI_BASE                     SSI1_BASE
